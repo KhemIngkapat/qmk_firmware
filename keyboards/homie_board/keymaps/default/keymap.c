@@ -11,7 +11,7 @@ const uint16_t PROGMEM combo_gui[] = {KC_W, KC_E, KC_R, COMBO_END};
 
 combo_t key_combos[] = {
     COMBO(combo_esc, KC_ESC),
-    COMBO(combo_tab,KC_TAB), 
+    COMBO(combo_tab,KC_TAB),
     COMBO(combo_bspc,KC_BSPC),
     COMBO(combo_ent,KC_ENT),
     COMBO(combo_gui,KC_LGUI),
@@ -24,7 +24,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 KC_Q, KC_W, KC_E, KC_R, KC_T,                KC_Y, KC_U, KC_I, KC_O, KC_P,
 LSFT_T(KC_A), KC_S, KC_D, KC_F, KC_G,        KC_H, KC_J, KC_K, KC_L, RSFT_T(KC_SEMICOLON),
 LCTL_T(KC_Z), KC_X, KC_C, KC_V, KC_B,        KC_N, KC_M, KC_COMMA, KC_DOT, RCTL_T(KC_SLASH),
-                    MO(2), KC_LALT,   KC_BSPC, LT(1,KC_SPC)
+                    MO(2), KC_LALT,          MO(1), KC_SPC
     ),
 
     [1] = LAYOUT(
@@ -34,7 +34,7 @@ KC_TRNS, KC_TRNS, KC_GRV, KC_QUOT, KC_MINS,     KC_EQL, KC_TRNS, KC_TRNS, KC_TRN
 KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LBRC,    KC_RBRC, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                             KC_TRNS, KC_TRNS,    KC_TRNS, KC_TRNS
     ),
-    
+
     [2] = LAYOUT(
 
 KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
