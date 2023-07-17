@@ -4,3 +4,4 @@
 #pragma once
 #define SPLIT_USB_DETECT
 #define SPLIT_WATCHDOG_ENABLE
+#define TAPPING_TERM 190
