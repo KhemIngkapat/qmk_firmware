@@ -7,3 +7,5 @@
 /* #define TAPPING_TERM 175 */
 #define SPLIT_LED_STATE_ENABLE
 #define EE_HANDS
+#define SPLIT_LAYER_STATE_ENABLE
+
