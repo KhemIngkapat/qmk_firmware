@@ -15,19 +15,22 @@ bool oled_task_user() {
 
     switch (get_highest_layer(layer_state)) {
         case 0:
-            oled_write_P(PSTR("Def\n"),false);
+            oled_write_P(PSTR("DEF\n"),false);
             break;
         case 1:
-            oled_write_P(PSTR("Acc\n"),false);
+            oled_write_P(PSTR("ACC\n"),false);
             break;
         case 2:
-            oled_write_P(PSTR("Fnc\n"),false);
+            oled_write_P(PSTR("FNC\n"),false);
             break;
         case 3:
-            oled_write_P(PSTR("Num\n"),false);
+            oled_write_P(PSTR("NUM\n"),false);
+            break;
+        case 4:
+            oled_write_P(PSTR("SYM\n"),false);
             break;
         default:
-            oled_write_ln_P(PSTR("Und"),false);
+            oled_write_ln_P(PSTR("UND"),false);
     }
 
     led_t led_state = host_keyboard_led_state();
@@ -56,19 +59,42 @@ combo_t key_combos[] = {
     COMBO(combo_caps,KC_CAPS),
 };
 
+typedef enum {
+    TD_NONE,
+    TD_UNKNOW,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP,
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    TD_LY4
+};
+
+td_state_t cur_dance(tap_dance_state_t *state);
+
+void ly4_finished(tap_dance_state_t *state, void *user_data);
+void ly4_reset(tap_dance_state_t *state, void *user_data);
+
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [0] = LAYOUT(
-KC_Q,         KC_W, KC_E, KC_R, KC_T,            KC_Y, KC_U, KC_I, KC_O, KC_P,
-LSFT_T(KC_A), KC_S, KC_D, KC_F, KC_G,            KC_H, KC_J, KC_K, KC_L, RSFT_T(KC_SEMICOLON),
-LCTL_T(KC_Z), KC_X, KC_C, KC_V, KC_B,            KC_N, KC_M, KC_COMMA, KC_DOT, RCTL_T(KC_SLASH),
-                          MO(2), KC_LALT,        TG(3), LT(1,KC_SPC)
+KC_Q,         KC_W, KC_E, KC_R, KC_T,               KC_Y, KC_U, KC_I, KC_O, KC_P,
+LSFT_T(KC_A), KC_S, KC_D, KC_F, KC_G,               KC_H, KC_J, KC_K, KC_L, RSFT_T(KC_SEMICOLON),
+LCTL_T(KC_Z), KC_X, KC_C, KC_V, KC_B,               KC_N, KC_M, KC_COMMA, KC_DOT, RCTL_T(KC_SLASH),
+                          TD(TD_LY4), KC_LALT,        TG(3), LT(1,KC_SPC)
     ),
 
     [1] = LAYOUT(
 
-KC_1,    KC_2,    KC_3,    KC_4,    KC_5,          KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+KC_1,    KC_2,    KC_3,    KC_4,    KC_5,          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
 KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
 KC_TRNS, KC_TRNS, KC_CIRC, KC_AMPR, KC_ASTR,       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                            KC_TRNS, KC_TRNS,       KC_TRNS, KC_TRNS
@@ -76,10 +102,10 @@ KC_TRNS, KC_TRNS, KC_CIRC, KC_AMPR, KC_ASTR,       KC_TRNS, KC_TRNS, KC_TRNS, KC
 
     [2] = LAYOUT(
 
-KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,      KC_MINS, KC_EQL, KC_LPRN, KC_LBRC,  KC_LCBR,
-KC_TRNS, KC_F5,   KC_F6,   KC_F7,   KC_F8,      KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_QUOT,
-KC_TRNS, KC_F9,   KC_F10,  KC_F11,  KC_F12,     KC_UNDS, KC_PLUS, KC_RPRN, KC_RBRC,  KC_RCBR,
-                           KC_TRNS, KC_TRNS,    KC_BSLS, QK_REP
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_6,    KC_7,    KC_8,    KC_9,     KC_0,
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_QUOT,
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS,
+                           KC_TRNS, OSL(4),    KC_BSLS, QK_REP
     ),
 
     [3] = LAYOUT(
@@ -89,5 +115,50 @@ KC_NO, KC_4, KC_5, KC_6, KC_NO,       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
 KC_NO, KC_7, KC_8, KC_9, KC_NO,       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
                    KC_TRNS, KC_0,     KC_TRNS, KC_NO
     ),
+
+    [4] = LAYOUT(
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_MINS, KC_EQL,  KC_LPRN, KC_LBRC,  KC_LCBR,
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_QUOT,
+KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_UNDS, KC_PLUS, KC_RPRN, KC_RBRC,  KC_RCBR,
+                           KC_TRNS, KC_TRNS,    KC_BSLS, QK_REP
+
+
+
+    ),
 };
 
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) {
+        return TD_DOUBLE_TAP;
+    } else return TD_UNKNOW;
+}
+
+static td_tap_t ly4tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void ly4_finished(tap_dance_state_t *state, void *user_data) {
+    ly4tap_state.state = cur_dance(state);
+    switch (atap_state.state) {
+        case TD_SINGLE_TAP: register_code(OSL(4)); break;
+        case TD_SINGLE_HOLD: register_code(MO(2)); break;
+        default: break;
+        }
+}
+
+void ly4_reset(tap_dance_state_t *state, void *user_data) {
+    switch (atap_state.state) {
+        case TD_SINGLE_TAP: unregister_code(OSL(4)); break;
+        case TD_SINGLE_HOLD: unregister_code(MO(2)); break;
+        default: break;
+    }
+    ly4tap_state.state = TD_NONE;
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_LY4] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ly4_finished, ly4_reset)
+};
