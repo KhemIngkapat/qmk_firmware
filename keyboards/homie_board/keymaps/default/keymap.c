@@ -117,14 +117,12 @@ KC_NO, KC_7, KC_8, KC_9, KC_NO,       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
     ),
 
     [4] = LAYOUT(
-KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_MINS, KC_EQL,  KC_LPRN, KC_LBRC,  KC_LCBR,
-KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_QUOT,
-KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_UNDS, KC_PLUS, KC_RPRN, KC_RBRC,  KC_RCBR,
-                           KC_TRNS, KC_TRNS,    KC_BSLS, QK_REP
-
-
-
+KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,      KC_MINS, KC_EQL,  KC_LPRN, KC_LBRC, KC_LCBR,
+KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,     KC_BSLS, KC_PIPE, KC_GRV,  KC_TILD, KC_TRNS,
+KC_F11,  KC_F12,  KC_TRNS, KC_TRNS, KC_TRNS,    KC_UNDS, KC_PLUS, KC_RPRN, KC_RBRC, KC_RCBR,
+                           KC_TRNS, KC_TRNS,    KC_BSLS, KC_TRNS
     ),
+
 };
 
 td_state_t cur_dance(tap_dance_state_t *state) {
@@ -162,3 +160,12 @@ void ly4_reset(tap_dance_state_t *state, void *user_data) {
 tap_dance_action_t tap_dance_actions[] = {
     [TD_LY4] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ly4_finished, ly4_reset)
 };
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+            return 150;
+        default:
+            return TAPPING_TERM;
+    }
+}
