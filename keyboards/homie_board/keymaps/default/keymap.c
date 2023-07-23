@@ -131,8 +131,8 @@ td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count == 1) {
         if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
         else return TD_SINGLE_HOLD;
-    } else if (state->count == 2) {
-        return TD_DOUBLE_TAP;
+    /* } else if (state->count == 2) { */
+    /*     return TD_DOUBLE_TAP; */
     } else return TD_UNKNOW;
 }
 
@@ -143,17 +143,19 @@ static td_tap_t ly4tap_state = {
 
 void ly4_finished(tap_dance_state_t *state, void *user_data) {
     ly4tap_state.state = cur_dance(state);
-    switch (atap_state.state) {
-        case TD_SINGLE_TAP: register_code(OSL(4)); break;
-        case TD_SINGLE_HOLD: register_code(MO(2)); break;
+    switch (ly4tap_state.state) {
+        case TD_SINGLE_TAP:
+            set_oneshot_layer(4,ONESHOT_START);
+            clear_oneshot_layer_state(ONESHOT_PRESSED); break;
+        case TD_SINGLE_HOLD: layer_on(2); break;
         default: break;
         }
 }
 
 void ly4_reset(tap_dance_state_t *state, void *user_data) {
-    switch (atap_state.state) {
-        case TD_SINGLE_TAP: unregister_code(OSL(4)); break;
-        case TD_SINGLE_HOLD: unregister_code(MO(2)); break;
+    switch (ly4tap_state.state) {
+        case TD_SINGLE_TAP: break;
+        case TD_SINGLE_HOLD: layer_off(2); break;
         default: break;
     }
     ly4tap_state.state = TD_NONE;
