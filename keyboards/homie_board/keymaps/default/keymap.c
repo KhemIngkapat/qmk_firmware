@@ -129,7 +129,7 @@ KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_UNDS, KC_PLUS, KC_RPRN, KC_RB
 
 td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count == 1) {
-        if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
+        if (!state->pressed) return TD_SINGLE_TAP;
         else return TD_SINGLE_HOLD;
     /* } else if (state->count == 2) { */
     /*     return TD_DOUBLE_TAP; */
@@ -153,10 +153,8 @@ void ly4_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 void ly4_reset(tap_dance_state_t *state, void *user_data) {
-    switch (ly4tap_state.state) {
-        case TD_SINGLE_TAP: break;
-        case TD_SINGLE_HOLD: layer_off(2); break;
-        default: break;
+    if(ly4tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(2);
     }
     ly4tap_state.state = TD_NONE;
 }
